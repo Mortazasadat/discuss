@@ -1,3 +1,4 @@
+"use client";
 import { singIn, singOut } from "@/actions";
 import { auth } from "@/auth";
 import {
@@ -12,14 +13,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 
-async function Header() {
-  const session = await auth();
+function Header() {
+  // with server components the parent func should asyn and we use auth
+  //   const session = await auth();
+
+  const session = useSession();
 
   let authContent: React.ReactNode;
-  if (session?.user) {
+  if (session.status === "loading") {
+    authContent = null;
+  } else if (session?.data?.user) {
     authContent = (
       <NavbarItem>
         <Popover placement="bottom">
@@ -29,19 +36,19 @@ async function Header() {
               as="button"
               className="transition-transform"
               color="secondary"
-              name={session.user.name || "User"}
+              name={session.data.user.name || "User"}
               size="sm"
-              src={session.user.image || ""}
+              src={session.data.user.image || ""}
             />
           </PopoverTrigger>
           <PopoverContent className="bg-white">
             <div className="px-1 py-2">
               <div className="flex flex-col items-center gap-2 p-2">
                 <p className="text-lg font-semibold text-gray-800">
-                  {session.user.name}
+                  {session.data.user.name}
                 </p>
                 <p className="text-sm text-gray-500">
-                  @{session.user.name?.toLowerCase().replace(/\s+/g, "")}
+                  @{session.data.user.name?.toLowerCase().replace(/\s+/g, "")}
                 </p>
               </div>
               <form action={singOut}>
