@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Input,
@@ -10,8 +10,9 @@ import {
   PopoverContent,
   Textarea,
 } from "@nextui-org/react";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import createTopic from "@/actions/create-topic";
+import SubmitButton from "./SubmitButton";
 
 function TopicCreateForm() {
   const [formState, formAction] = useFormState(createTopic, {
@@ -43,9 +44,12 @@ function TopicCreateForm() {
               isInvalid={!!formState.errors.description}
               errorMessage={formState.errors.description?.join(", ")}
             />
-            <Button color="primary" type="submit">
-              Create
-            </Button>
+            {formState.errors._form && (
+              <p className="text-red-500">
+                {formState.errors._form?.join(", ")}
+              </p>
+            )}
+            <SubmitButton>Create</SubmitButton>
           </div>
         </form>
       </PopoverContent>
